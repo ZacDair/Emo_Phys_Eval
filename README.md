@@ -1,8 +1,10 @@
 # Variance and Performance of ECG and PPG Signals in Classifying Affective State
 
-Initial version of the physiological signal evaluation platform.
+Second version of the physiological signal evaluation platform.
+Now includes automated experiment running from YAML configurations.
 
 ## Provided Functions
+- Automated/Compartmentalised experiment running via YAML files
 - ECG and PPG Feature Extraction - leveraging HeartPy
 - ECG and PPG Windowing and labelling in accordance with dataset author instructions
 - Cardiac feature difference analysis between ECG and PPG of the same dataset
@@ -18,3 +20,58 @@ WESAD - [WESAD (Wearable Stress and Affect Detection) Data Set](https://archive.
 
  _The expected structure is a Root directory containing subdirectories per participant, which in turn include either individual files for ECG, PPG and Labels as in CASE, or a combined file as in WESAD
  Reading from .pkl and .csv supported._ 
+
+## Documentation
+For generated documentation [see here](index.html)
+Each individual Module is documented as follows:
+- [Data_Operations.py]()
+- [Experiments.py]()
+- [Feature_Operations.py]()
+- [Label_Operations.py]()
+- [Plotting.py]()
+- [Window_Operations.py]()
+- [Yaml_Operations.py]()
+
+Runtime configurations are located in Configs.config.py - these include HeartPy feature names, Dictionary of Sklearn models, YAML Experiment directory
+
+Main.py acts as the entry point, which runs all experiments located in the YAML Experiment directory one by one.
+
+
+# Future Development
+### V0.2 Feature List
+#### Experiments:
+- [ ] Isolate ROC functionality to it’s own experiment
+#### General:
+- [ ] Makefile for current dependencies
+- [ ] YAML template (requirements and datatypes) + validator
+- [X] Config to point to YAML locations, dataset locations etc
+- [ ] Unit testing
+#### Automation:
+- [X] Encapsulate data loading functions
+- [X] Encapsulate signal processing, windowing, feature extraction
+- [X] Encapsulate individual experiment procedures
+- [X] YAML file design to automate ISSC work
+- [X] YAML main loop
+
+### V0.3 Feature List
+#### Experiments:
+- [ ] Continuous arousal/valence value classification
+- [ ] Semi-Supervised Approaches
+- [ ] Intra/Inter personal variances of emotion - re-align and compare windows of emotion
+- [ ] Expand feature importance to include Sklearn methods
+#### Signal Processing:
+- [ ] Add a signal processing stage with basic hearty filtering
+- [ ] Add further methods based on literature
+- [ ] Anomaly detection to identify electrode disconnection, or noise
+####  Feature Extraction:
+- [ ] Add support for NeuroKit features 
+#### General:
+- [ ] Implement starting from windowed data
+- [ ] Summarise YAML giving a experiment description
+- [ ] Physiological signal identification of meta data - take sample rate identify length of signal, compare to other, signals, expected length, label length etc
+- [ ] Signal wide processing (might fit with anomaly detection) - take whole signal identify at what points emotion is showing
+#### UI:
+- [ ] CLI or dashboard UI creation
+- [ ] Results logging through google sheets or alternative + YAML description
+#### API:
+- [ ] Send signal window - retrieve emotion label (requires phys data window, phys signal name, sample rate, signal processing mode, feature extraction mode)
