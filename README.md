@@ -1,4 +1,5 @@
 # Variance and Performance of ECG and PPG Signals in Classifying Affective State
+	/gitlab/coverage/:ZacDair/:Emo_Phys_Eval/:master
 
 Second version of the physiological signal evaluation platform.
 Now includes automated experiment running from YAML configurations.
@@ -29,7 +30,7 @@ WESAD - [WESAD (Wearable Stress and Affect Detection) Data Set](https://archive.
  Reading from .pkl and .csv supported._ 
 
 ## Documentation
-For generated documentation [see here](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/index.html)
+For generated documentation [see here](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/index.html)  
 Each individual Module is documented as follows:
 - [Data_Operations.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Data_Operations.html)
 - [Experiments.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Experiments.html)
