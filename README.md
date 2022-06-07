@@ -9,6 +9,13 @@ Initial version of the physiological signal evaluation platform.
 - Cardiac feature importance from emotive ECG and PPG, using SHAP and a selected Machine Learning classifier
 - Model selection including cross-validation (several base Sklearn models supported)
 
+## Instructions
+1. Download the supported datasets, unzip and place in the Data/Datasets directory
+2. Ensure a correct installation of python is available
+3. Load the datasets, window the signals, extract features and label accordingly using CASE_Features.py and WESAD_Features.py respectively
+4. ML Operations including model selection, feature importance, and plotting ROC curves is handled in ML.py
+5. Feature difference analysis is provided by Signal_Wide_Stats.py
+
 
 ## Supported Datasets
 CASE - [The Continuously Annotated Signals of Emotion (CASE) dataset](https://www.nature.com/articles/s41597-019-0209-0)  
