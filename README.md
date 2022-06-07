@@ -1,5 +1,4 @@
 # Variance and Performance of ECG and PPG Signals in Classifying Affective State
-	/gitlab/coverage/:ZacDair/:Emo_Phys_Eval/:master
 
 Second version of the physiological signal evaluation platform.
 Now includes automated experiment running from YAML configurations.
