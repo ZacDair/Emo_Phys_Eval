@@ -29,15 +29,15 @@ WESAD - [WESAD (Wearable Stress and Affect Detection) Data Set](https://archive.
  Reading from .pkl and .csv supported._ 
 
 ## Documentation
-For generated documentation [see here](index.html)
+For generated documentation [see here](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/index.html)
 Each individual Module is documented as follows:
-- [Data_Operations.py]()
-- [Experiments.py]()
-- [Feature_Operations.py]()
-- [Label_Operations.py]()
-- [Plotting.py]()
-- [Window_Operations.py]()
-- [Yaml_Operations.py]()
+- [Data_Operations.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Data_Operations.html)
+- [Experiments.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Experiments.html)
+- [Feature_Operations.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Feature_Operations.html)
+- [Label_Operations.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Label_Operations.html)
+- [Plotting.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Plotting.html)
+- [Window_Operations.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Window_Operations.html)
+- [Yaml_Operations.py](https://github.com/ZacDair/Emo_Phys_Eval/tree/master/Docs/html/Modules/Yaml_Operations.html)
 
 Runtime configurations are located in Configs.config.py - these include HeartPy feature names, Dictionary of Sklearn models, YAML Experiment directory
 
