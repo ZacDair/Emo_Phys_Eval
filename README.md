@@ -1,5 +1,5 @@
 # :warning: POST AICS 2022 -  Update In Progress :warning:  
-Codebase will be updated shortly
+The codebase will be updated shortly following the AICS 2022 conference, to align with the code used in the publication.  
 
 
 # Variance and Performance of ECG and PPG Signals in Classifying Affective State
