@@ -85,4 +85,4 @@ Main.py acts as the entry point, which runs all experiments located in the YAML 
 - [ ] Results logging through google sheets or alternative + YAML description
 #### API:
 - [ ] Send signal window - retrieve emotion label (requires phys data window, phys signal name, sample rate, signal processing mode, feature extraction mode)
-=======
+
