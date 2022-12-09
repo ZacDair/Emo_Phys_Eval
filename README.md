@@ -1,4 +1,4 @@
-# :warning: UPDATE IN PROGRESS  - POST AICS 2022 :warning:  
+# :warning: POST AICS 2022 -  Update In Progress :warning:  
 Codebase will be updated shortly
 
 
