@@ -1,0 +1,118 @@
+# Example YAML file for loading raw data, windowing, labelling windows, extracting features
+
+
+# Load data from dataset files
+dataloading:
+  dataset: CASE # WESAD or CASE, dataset name corresponding to data loading code found in Modules_old/dataloading.py
+
+  sample rates: # numerical value in Hz
+    ecg: 1000
+    ppg: 1000
+    label: 20
+
+  method: features # or features or windows (if raw or windows a subsequent feature extraction stage is required)
+
+  data location: Data/Saves/CASE_10sec_1secSliding_new_cleaning/features #../Datasets/CASE_full/data/interpolated
+  output location: Data/Saves/CASE_10sec_1secSliding_new_cleaning/features
+
+
+# Split data into windows of size x and label
+windowing:
+  window size: 10 # numerical value in seconds
+
+  labelling:
+    method: mean # TODO: add mode, etc
+    conversion: null # or categorical for CASE
+
+  drop labels: [] # WESAD 0, 5, 6, 7
+  # TODO: add adjacent data handling
+
+
+# Conduct noise reduction on whole signal, or windows
+noise reduction:
+  enabled: yes # or no
+
+  method:
+    signal size: window # or window (full runs noise reduction on whole signal prior to windowing, otherwise conducts on windows)
+    name: heartpy_basic
+    min cutoff: 0.7
+    max cutoff: 3.5
+    filter type: bandpass
+
+# Conducted by default if dataloading method is raw or windows
+feature extraction:
+  method: heartpy # or neurokit - to be implemented
+  features: all # or [key1, key2]
+
+
+# Experiments to be conducted
+experiments:
+
+#  # Default setup for feature difference - conducted during windowing
+#  feature difference:
+#    data: both # ecg, ppg or both
+#    feature keys : all # or all
+#    labels: all # or [label_1, label_2, ...] of the labels we care about
+#    subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
+#    plot: yes
+#    save location: Results/ # or null for no saving
+
+#  # Default setup for feature importance - if no model provided - runs model selection to identify best model
+#  feature importance:
+#    data: both # ecg, ppg or both
+#    method: SHAP # TODO: implement Sklearn methods
+#    models:
+#      LogisticRegression:
+#        max_iter: 1500
+#      Perceptron:
+#      RandomForestClassifier:
+##      SVC:
+##        kernel: RBF
+#      ExtraTreesClassifier:
+##      AdaBoostClassifier:
+#      LinearDiscriminantAnalysis:
+##      KNeighborsClassifier: # model from supported_models.txt
+#    feature keys : all # or [ibi, breathingrate, bpm]
+#    labels: all #[1, 2, 3, 4, 5, 6, 7, 8] # or [label_1, label_2, ...] of the labels we care about
+#    label names: #['amusing', 'boring', 'relaxing', 'scary'] # ["L-L", "L-N", "L-H", "N-L", "N-N", "N-H", "H-L", "H-N", "H-H"]
+#    subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
+#    plot: yes
+#    save location: Results/ # or null for no saving
+
+  # Default setup for model comparison
+  model selection:
+    data: both # ecg, ppg or both
+    # Set a list of models to be used with sub values for their parameters
+    models:
+      LogisticRegression:
+        max_iter: 1000
+      Perceptron:
+      RandomForestClassifier:
+#      LinearSVC:
+#      SVC:
+#        kernel: RBF
+      ExtraTreesClassifier:
+      AdaBoostClassifier:
+      LinearDiscriminantAnalysis:
+      QuadraticDiscriminantAnalysis:
+      KNeighborsClassifier:
+      DecisionTreeClassifier:
+#      LS-SVC:
+
+    # Define the size of our holdout set
+    holdout size: 0.20
+
+    # Set a random state value
+    random state: 21
+
+    # Enable or disable KFold cross validation
+    crossvalidation:
+      enabled: yes
+      splits: 5
+
+    feature keys: all # or [ibi, breathingrate, bpm]
+    labels: [0, 2, 6, 8] #[1, 2, 3, 4, 5, 6, 7, 8] # or [label_1, label_2, ...] of the labels we care about
+    subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
+
+    plot: yes
+    save location: Results/ # or null for no saving

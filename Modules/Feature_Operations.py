@@ -4,6 +4,9 @@ import neurokit2 as nk
 import os
 import pandas as pd
 import warnings
+import numpy as np
+
+np.set_printoptions(threshold=5000)
 
 # Store information about any windows that failed
 failedWindows = []
@@ -65,18 +68,20 @@ def computeFeatures(windows, dataKey, sampleRate, filterParams, subject, dataset
                     # Extract the signal features
                     workingPPG, metrics = hp.process(windowData, sampleRate)
 
-                # Add the index and label values, and store in our running list
-                metrics["og_window_index"] = window
-                metrics["label"] = windows[window]["Label"]
-                metrics["subject"] = subject
-                result.append(metrics)
+                    # Add the index and label values, and store in our running list
+                    metrics['window_data'] = windowData
+                    metrics["og_window_index"] = window
+                    metrics["label"] = windows[window]["Label"]
+                    metrics["subject"] = subject
+                    result.append(metrics)
             except KeyError as e:
                 print(f"ERROR - Attempted to use a non-existent key: {e}")
                 return pd.DataFrame(result)
             except Exception as e:
-                print(e)
+                print(f"ERROR - Unexpected error occurred {e}")
                 failedWindows.append({"Dataset": dataset, "Signal": dataKey, "Subject": subject, "WindowNum": window, "WindowData": windowData,
                                       "SampleRate": sampleRate})
-                print(f"Window-{window} Omitted")
-
+                print(f"Window-{window} Omitted (stored in result with 0 as feature values)")
+                #metrics = {'bpm':0,'ibi':0,'sdnn':0,'sdsd':0,'rmssd':0,'pnn20':0,'pnn50':0,'hr_mad':0,'sd1':0,'sd2':0,'s':0,'sd1/sd2':0,'breathingrate':0,'window_data':windowData,'og_window_index':window,'label':windows[window]["Label"],'subject':subject}
+                #result.append(metrics)
         return pd.DataFrame(result)

@@ -1,0 +1,10 @@
+PyYaml
+scikit-learn
+pandas
+numpy
+shap
+matplotlib
+heartpy
+neurokit2
+coverage
+pytest
