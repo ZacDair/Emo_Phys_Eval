@@ -12,9 +12,9 @@ dataloading:
 
   method: features # or features or windows (if raw or windows a subsequent feature extraction stage is required)
 
-  data location: Data/Saves/WESAD/
+  data location: Data/Saves/WESAD_10sec_1secSliding_new_cleaning/features
 
-  output location: Data/Saves/WESAD/res
+  output location: Data/Saves/WESAD_10sec_1secSliding_new_cleaning/features
 
 
 # Split data into windows of size x and label
@@ -36,8 +36,8 @@ noise reduction:
   method:
     signal size: window # or window (full runs noise reduction on whole signal prior to windowing, otherwise conducts on windows)
     name: heartpy_basic
-    min cutoff: 0.5
-    max cutoff: 2.5
+    min cutoff: 0.7
+    max cutoff: 3.5
     filter type: bandpass
 
 # Conducted by default if dataloading method is raw or windows
@@ -50,58 +50,70 @@ feature extraction:
 experiments:
 
   # Default setup for feature difference - conducted during windowing
-  feature difference:
-    data: both # ecg, ppg or both
-    feature keys : all # or all
-    labels: [1, 2, 3, 4] # or [label_1, label_2, ...] of the labels we care about
-    subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
-    plot: yes
-    save location: Results/ # or null for no saving
-
+#  feature difference:
+#    data: both # ecg, ppg or both
+#    feature keys : all # or all
+#    labels: [1, 2, 3, 4] # or [label_1, label_2, ...] of the labels we care about
+#    subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
+#    plot: yes
+#    save location: Results/5_Sec # or null for no saving
+#
   # Default setup for feature importance - if no model provided - runs model selection to identify best model
   feature importance:
     data: both # ecg, ppg or both
     method: SHAP # TODO: implement Sklearn methods
     models:
-      RandomForestClassifier: # model from supported_models.txt
+#      LogisticRegression:
+#        max_iter: 1500
+#      Perceptron:
+#      RandomForestClassifier:
+#      SVC:
+#        kernel: RBF
+      ExtraTreesClassifier:
+#      AdaBoostClassifier:
+#      LinearDiscriminantAnalysis:
+#      KNeighborsClassifier: # model from supported_models.txt
     feature keys : all # or [ibi, breathingrate, bpm]
     labels: [1, 2, 3, 4] # or [label_1, label_2, ...] of the labels we care about
-    label names: ["Neutral", "Stress", "Amusment", "Meditation"]
+    label names: ["Neutral", "Stress", "Amusement", "Meditation"]
     subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
     plot: yes
     save location: Results/ # or null for no saving
 
-  # Default setup for model comparison
-  model selection:
-    data: both # ecg, ppg or both
-    # Set a list of models to be used with sub values for their parameters
-    models:
-      LogisticRegression:
-        max_iter: 1000
-      Preceptron:
-      RandomForestClassifier:
-      LinearSVC:
-      SVC:
-        kernel: RBF
-      ExtraTreesClassifier:
-      AdaBoostClassifier:
-      LinearDiscriminantAnalysis:
-      KNeighborsClassifier:
-
-    # Define the size of our holdout set
-    holdout size: 0.20
-
-    # Set a random state value
-    random state: 21
-
-    # Enable or disable KFold cross validation
-    crossvalidation:
-      enabled: yes
-      splits: 5
-
-    feature keys: all # or [ibi, breathingrate, bpm]
-    labels: [2, 3, 4] # or [label_1, label_2, ...] of the labels we care about
-    subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
-
-    plot: yes
-    save location: Results/ # or null for no saving
+#  # Default setup for model comparison
+#  model selection:
+#    data: both # ecg, ppg or both
+#    # Set a list of models to be used with sub values for their parameters
+#    models:
+#      LogisticRegression:
+#        max_iter: 1000
+#      Perceptron:
+#      RandomForestClassifier:
+##      LinearSVC:
+#      SVC:
+#        kernel: RBF
+#      ExtraTreesClassifier:
+#      AdaBoostClassifier:
+#      LinearDiscriminantAnalysis:
+#      QuadraticDiscriminantAnalysis:
+#      KNeighborsClassifier:
+#      DecisionTreeClassifier:
+##      LS-SVC:
+#
+#    # Define the size of our holdout set
+#    holdout size: 0.20
+#
+#    # Set a random state value
+#    random state: 21
+#
+#    # Enable or disable KFold cross validation
+#    crossvalidation:
+#      enabled: yes
+#      splits: 5
+#
+#    feature keys: all # all or [ibi, breathingrate, bpm]
+#    labels: [1, 2, 3, 4] # or [label_1, label_2, ...] of the labels we care about
+#    subjects: all # or [sub_1, sub_2, ...] of the subjects we care about
+#
+#    plot: yes
+#    save location: Results/ # or null for no saving

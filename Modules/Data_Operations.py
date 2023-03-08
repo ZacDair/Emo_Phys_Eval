@@ -7,8 +7,10 @@ from sklearn.preprocessing import label_binarize
 
 # Project Level Imports
 from Modules.Feature_Operations import computeFeatures
-from Modules.Label_Operations import convertArousalValence
-from Modules.Window_Operations import getLabelledWindows
+from Modules.Label_Operations import convertArousalValence, caseVideoLabelling
+from Modules.Window_Operations import getLabelledWindows, getWindows
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
 # CASE specific data alterations - following instructions from dataset authors
@@ -16,42 +18,58 @@ def caseAlterations(dataFile, labelFile, sampleRates):
     """
     Takes in the data, label file paths and sample rates, reads the csv files given.
     Conducts conversions detailed by CASE dataset authors such as converting time to milliseconds, ECG to millivolts.
-    Additionally converts the arousal valence values from joystick input to discrete values.
+    Additionally, converts the arousal valence values from joystick input to discrete values.
     :param dataFile: Physiological signal file path *.csv required
     :param labelFile: Annotation file path *.csv required
     :param sampleRates: Dictionary containing keys: 'ecg', 'ppg', 'labels' and associated int sample rate values
     :return: ECG data converted to np.array, PPG data converted to np.array, Labels converted to discrete np.array
     """
-    # Load signals
-    sigData = pd.read_csv(dataFile, sep="\t", header=None)
-    sigData.columns = ["DaqTime", "ECG", "BVP", "GSR", "RSP", "SKT", "emg_zygo", "emg_coru", "emg_trap"]
-    sigData = sigData[["DaqTime", "ECG", "BVP"]]
+    # Load signals - from RAW
+    # sigData = pd.read_csv(dataFile, sep="\t", header=None)
+    # sigData.columns = ["DaqTime", "ECG", "BVP", "GSR", "RSP", "SKT", "emg_zygo", "emg_coru", "emg_trap"]
+    # sigData = sigData[["DaqTime", "ECG", "BVP"]]
 
-    # Load labels
-    annoData = pd.read_csv(labelFile, sep="\t", header=None)
-    annoData.columns = ["JsTime", "X", "Y"]
+    # Load signals - from MatLab interpolated
+    sigData = pd.read_csv(dataFile, sep=",")
+    sigData = sigData[["daqtime", "ecg", "bvp"]]
 
-    # CASE specific data alterations - ECG and Annotations
-    # Convert Time from seconds to ms with 3 decimal rounding
-    sigData["DaqTime"] = sigData["DaqTime"].apply(lambda x: x * 1000).round(decimals=3)
+    # Load labels - from RAW
+    # annoData = pd.read_csv(labelFile, sep="\t", header=None)
+    # annoData.columns = ["JsTime", "X", "Y"]
 
-    # Convert ECG (usually measured in millivolts (sensor I/P range +-40 mV))
-    # And convert volts to milliVolts (mV) with rounding to three decimal places
-    sigData["ECG"] = sigData["ECG"].apply(lambda x: ((x - 2.8) / 50) * sampleRates['ecg']).round(decimals=3)
+    # Load labels - from matlab
+    annoData = pd.read_csv(labelFile, sep=",")
 
-    # Convert Joystick values Arousal(x) and Valence(y) axis values to range [0.5 9.5]
-    annoData["Valence"] = annoData["Y"].apply(lambda x: 0.5 + 9 * (x + 26225) / 52450)
-    annoData["Arousal"] = annoData["X"].apply(lambda x: 0.5 + 9 * (x + 26225) / 52450)
+    # # CASE specific data alterations - ECG and Annotations
+    # # Convert Time from seconds to ms with 3 decimal rounding
+    # sigData["DaqTime"] = sigData["DaqTime"].apply(lambda x: x * 1000).round(decimals=3)
+    # annoData["JsTime"] = annoData["JsTime"].apply(lambda x: x * 1000).round(decimals=3)
+    #
+    # # Convert ECG (usually measured in millivolts (sensor I/P range +-40 mV))
+    # # And convert volts to milliVolts (mV) with rounding to three decimal places
+    # sigData["ECG"] = sigData["ECG"].apply(lambda x: ((x - 2.8) / 50) * sampleRates['ecg']).round(decimals=3)
+    #
+    # # Convert Joystick values Arousal(x) and Valence(y) axis values to range [0.5 9.5]
+    # annoData["Valence"] = annoData["Y"].apply(lambda x: 0.5 + 9 * (x + 26225) / 52450)
+    # annoData["Arousal"] = annoData["X"].apply(lambda x: 0.5 + 9 * (x + 26225) / 52450)
 
     # Convert ECG, BVP and Label to same format as WESAD
-    ecg = sigData["ECG"].to_numpy()
+    ecg = sigData["ecg"].to_numpy()  # 'ECG'
 
-    ppg = sigData["BVP"].to_numpy()
-    label_a = annoData["Arousal"].to_numpy()
-    label_v = annoData["Valence"].to_numpy()
+    ppg = sigData["bvp"].to_numpy()   # 'BVP'
+    label_a = annoData["valence"].to_numpy()  # 'Valence'
+    label_v = annoData["arousal"].to_numpy()  # 'Arousal'
 
     # Convert continous X/Y axis arousal into discrete values
     label = convertArousalValence(label_a, label_v)
+    label = np.array(label)
+
+
+    # Get subject name
+    subject = dataFile.replace('\\', '/').split('/')[-1].split("_")[0].replace('/', '')
+
+    # Video labelling
+    #label = caseVideoLabelling(subject, sigData['DaqTime'])
 
     return ecg, ppg, label
 
@@ -102,18 +120,38 @@ def processRawData(dataset, datasetPath, windowSize, sampleRates, signalCleaning
         signalFiles = os.listdir(signalPath)
         labelsFiles = os.listdir(labelsPath)
         for sFile, lFile in zip(signalFiles, labelsFiles):
-            if sFile.endswith(".txt"):
-                subject = sFile.split("_")[0].replace('\\', '')
+            # Wehn raw - if sFile.endswith(".txt"):
+            if sFile.endswith(".csv"):
+                # subject = sFile.split("_")[0].replace('\\', '')
+                subject = sFile.replace(".csv", '')
 
                 sFile = os.path.join(signalPath, sFile)
                 lFile = os.path.join(labelsPath, lFile)
 
+                # When loading from raw
                 ecg, ppg, label = caseAlterations(sFile, lFile, sampleRates)
+
+                # When loading data from Matlab
+                # sigData = pd.read_csv(sFile, sep=",")
+                # sigData.columns = ['daqtime','ecg','bvp','gsr','rsp','skt','emg_zygo','emg_coru','emg_trap','video']
+                # sigData = sigData[['daqtime', 'ecg', 'bvp', 'video']]
+                # ecg = sigData['ecg'].to_numpy()
+                # ppg = sigData['bvp'].to_numpy()
+
+                # When loading label from Matlab
+                # Video label
+                # label = sigData['video']
+                # Arousal/Valence
+                # annoData = pd.read_csv(lFile, sep=",")
+                # annoData.columns = ['jstime','valence','arousal','video']
+                # label = annoData["valence"].to_numpy()
+                # label_v = annoData["arousal"].to_numpy()
+
 
                 # Todo: encapsulate the following code
                 # Windowing
-                ecgWindows = getLabelledWindows(ecg, label, windowSize, sampleRates['ecg'], sampleRates['label'], "ECG")
-                ppgWindows = getLabelledWindows(ppg, label, windowSize, sampleRates['ppg'], sampleRates['label'], "PPG")
+                ecgWindows = getWindows(ecg, label, windowSize, sampleRates['ecg'], sampleRates['label'], "ECG")
+                ppgWindows = getWindows(ppg, label, windowSize, sampleRates['ppg'], sampleRates['label'], "PPG")
 
                 # Feature extraction ECG - PPG
                 ecgFeatureDf = computeFeatures(ecgWindows, "ECG", sampleRates['ecg'], signalCleaning, subject, dataset,
@@ -124,14 +162,16 @@ def processRawData(dataset, datasetPath, windowSize, sampleRates, signalCleaning
                 # Save the extracted features to csv files
                 # Created the main and subject directory if needed
                 if not os.path.exists(outputPath):
-                    os.mkdir(outputPath)
+                    os.makedirs(outputPath)
+                    print(f"LOG - Directories created {outputPath}")
 
                 if not os.path.exists(os.path.join(outputPath, subject)):
                     os.mkdir(os.path.join(os.path.join(outputPath, subject)))
+                    print(f"LOG - Directory created {os.path.join(outputPath, subject)}")
 
                 outPath = os.path.join(outputPath, subject, subject)
-                ppgFeatureDf.to_csv(str(outPath + "_ppg.csv"))
-                ecgFeatureDf.to_csv(str(outPath + "_ecg.csv"))
+                ppgFeatureDf.to_pickle(str(outPath + "_ppg.pkl"))
+                ecgFeatureDf.to_pickle(str(outPath + "_ecg.pkl"))
         return True
 
     elif dataset.lower().strip() == "wesad":
@@ -142,8 +182,8 @@ def processRawData(dataset, datasetPath, windowSize, sampleRates, signalCleaning
 
             # Todo: encapsulate the following code
             # Windowing
-            ecgWindows = getLabelledWindows(ecg, label, windowSize, sampleRates['ecg'], sampleRates['label'], "ECG")
-            ppgWindows = getLabelledWindows(ppg, label, windowSize, sampleRates['ppg'], sampleRates['label'], "PPG")
+            ecgWindows = getWindows(ecg, label, windowSize, sampleRates['ecg'], sampleRates['label'], "ECG")
+            ppgWindows = getWindows(ppg, label, windowSize, sampleRates['ppg'], sampleRates['label'], "PPG")
 
             # Feature extraction ECG - PPG
             ecgFeatureDf = computeFeatures(ecgWindows, "ECG", sampleRates['ecg'], signalCleaning, subject, dataset,
@@ -153,15 +193,18 @@ def processRawData(dataset, datasetPath, windowSize, sampleRates, signalCleaning
 
             # Save the extracted features to csv files
             # Created the subject directory if needed
+            # Nested directory creation
             if not os.path.exists(outputPath):
-                os.mkdir(outputPath)
+                os.makedirs(outputPath)
+                print(f"LOG - Directories created {outputPath}")
 
             if not os.path.exists(os.path.join(outputPath, subject)):
                 os.mkdir(os.path.join(os.path.join(outputPath, subject)))
+                print(f"LOG - Directory created {os.path.join(outputPath, subject)}")
 
             outPath = os.path.join(outputPath, subject, subject)
-            ppgFeatureDf.to_csv(str(outPath + "_ppg.csv"))
-            ecgFeatureDf.to_csv(str(outPath + "_ecg.csv"))
+            ppgFeatureDf.to_pickle(str(outPath + "_ppg.pkl"))
+            ecgFeatureDf.to_pickle(str(outPath + "_ecg.pkl"))
         return True
 
     else:
@@ -205,21 +248,27 @@ def combineDataFrames(filePaths, dataKey):
 
     # For every file that ends in *dataKey*.csv
     for f in filePaths:
-        if f.endswith(str(dataKey)+".csv"):
+        if f.endswith(str(dataKey)+".csv") or f.endswith(str(dataKey)+".pkl"):
             # Get subject name from path
             f = f.replace("\\", "/")
             subject = f.split("/")[4].replace("/", "")
 
             # Load dataframe and add subject col
             try:
-                df = pd.read_csv(f)
+                if f.endswith(".csv"):
+                    df = pd.read_csv(f)
+                elif f.endswith(".pkl"):
+                    df = pd.read_pickle(f)
+                else:
+                    print(f"An error occurred loading the file {f}")
+                    exit()
                 df["subject"] = subject
 
                 # Append to overarching Df
                 if resDf is None:
                     resDf = df
                 else:
-                    resDf = resDf.append(df, ignore_index=True)
+                    resDf = pd.concat([resDf, df], ignore_index=True)
 
             except FileNotFoundError as e:
                 print(f"ERROR - File not found {f}")
@@ -313,12 +362,13 @@ def getFeaturesAndLabels(data, subjects, labels, removeCols, featureList, subjec
         data = dropColumns(data, removeCols)
 
     features = selectColumns(data, featureList)
+    labels = selectColumns(data, labelCol)
 
     # Clean Features - removes an unsuable rows
-    features, indexes = cleanDataFrame(features)
-
-    labels = selectColumns(data, labelCol)
-    labels = labels[indexes].astype(np.float64)
+    # features, indexes = cleanDataFrame(features)
+    features = features.replace([np.nan, np.inf, -np.inf], 0.00)
+    features = features.fillna(0.00)
+    # labels = labels.loc[[indexes]].astype(np.float64)
 
     return features, labels
 

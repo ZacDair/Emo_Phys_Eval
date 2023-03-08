@@ -9,12 +9,13 @@ REQUIRES = ['PyYaml',
             'matplotlib',
             'heartpy',
             'coverage',
+            'neurokit2',
             'pytest']
 
 
 setup(
     name='Emo_Phys_Eval',
-    version='0.2',
+    version='0.3',
     packages=['Configs', 'Modules'],
     url='www.github.com/ZacDair/Emo_Phys_Eval',
     license='MIT',
