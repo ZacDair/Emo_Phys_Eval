@@ -1,4 +1,4 @@
-# Associated publication - "Inter and Intra Signal Variance in Feature Extraction and Classification of Affective State", Z. Dair, S. Dockray, R. O'Reilly, AICS 2022, Part of the Communications in Computer and Information Science book series (CCIS,volume 1662). [Available Here](https://link.springer.com/chapter/10.1007/978-3-031-26438-2_1)
+# Inter and Intra Signal Variance in Feature Extraction and Classification of Affective State, Z. Dair, S. Dockray, R. O'Reilly, AICS 2022, Part of the Communications in Computer and Information Science book series (CCIS,volume 1662). [Available Here](https://link.springer.com/chapter/10.1007/978-3-031-26438-2_1)
 
 ## :warning: POST AICS 2022 -  Update In Progress :warning:  
 The codebase will be updated shortly following the AICS 2022 conference, to align with the code used in the publication.  
